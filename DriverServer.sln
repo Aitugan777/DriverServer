@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DriverServer", "DriverServer.csproj", "{7037B702-8835-46AB-AAE2-FF9541DFA7D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7037B702-8835-46AB-AAE2-FF9541DFA7D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7037B702-8835-46AB-AAE2-FF9541DFA7D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7037B702-8835-46AB-AAE2-FF9541DFA7D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7037B702-8835-46AB-AAE2-FF9541DFA7D7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {133CE949-729A-4B79-AE36-792A740AE1BF}
+	EndGlobalSection
+EndGlobal
