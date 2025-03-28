@@ -45,5 +45,35 @@ namespace DriverServer.Controllers
             }
             return Ok(user);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User updatedUser)
+        {
+            if (updatedUser == null)
+            {
+                return BadRequest("Пользовательские данные не могут быть пустыми.");
+            }
+
+            // Находим пользователя по Id
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("Пользователь не найден.");
+            }
+
+            // Обновляем данные пользователя
+            user.FirstName = updatedUser.FirstName ?? user.FirstName;
+            user.LastName = updatedUser.LastName ?? user.LastName;
+            user.MiddleName = updatedUser.MiddleName ?? user.MiddleName;
+            user.Email = updatedUser.Email ?? user.Email;
+            user.PhoneNumber = updatedUser.PhoneNumber ?? user.PhoneNumber;
+            user.IsActive = updatedUser.IsActive;
+            user.GoogleSub = updatedUser.GoogleSub ?? user.GoogleSub;
+
+            // Сохраняем изменения в базе данных
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(user);
+        }
     }
 }
