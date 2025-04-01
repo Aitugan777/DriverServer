@@ -11,40 +11,27 @@ namespace DriverServer.Controllers
     {
         ApplicationDbContext _dbContext = null!;
 
+        static Dictionary<string, int> _confirmCodes = new Dictionary<string, int>();
+
         public UserController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        // Добавление пользователя
-        [HttpPost]
-        public async Task<IActionResult> AddUser([FromBody] User user)
+        /// <summary>
+        /// Проверка на не использование почты
+        /// </summary>
+        /// <param name="email">почта</param>
+        /// <returns>ok, если почта не используется, BadRequest если почта используется</returns>
+        [HttpGet("IsEmailFree/{email}")]
+        public async Task<IActionResult> IsEmailFree(string email)
         {
-            if (await _dbContext.Users.AnyAsync(u => u.Email == user.Email))
+            if (!string.IsNullOrEmpty(email))
             {
-                return BadRequest("Email уже зарегистрирован");
+                if (!await _dbContext.Users.AnyAsync(x => x.Email == email))
+                    return Ok();
             }
-
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
-            user.CreatedDate = DateTime.UtcNow;
-            _dbContext.Users.Add(user);
-            await _dbContext.SaveChangesAsync();
-            return Ok(user);
-        }
-
-        // Удаление пользователя
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var user = await _dbContext.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound("Пользователь не найден");
-            }
-
-            _dbContext.Users.Remove(user);
-            await _dbContext.SaveChangesAsync();
-            return Ok("Пользователь удален");
+            return BadRequest("Такой Email уже используется");
         }
 
         // Получение пользователя по Id
@@ -59,15 +46,33 @@ namespace DriverServer.Controllers
             return Ok(user);
         }
 
-        // Получение пользователя по Email и Password
-        [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User updatedUser)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            if (updatedUser == null)
             {
-                return Unauthorized("Неверный email или пароль");
+                return BadRequest("Пользовательские данные не могут быть пустыми.");
             }
+
+            // Находим пользователя по Id
+            var user = await _dbContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("Пользователь не найден.");
+            }
+
+            // Обновляем данные пользователя
+            user.FirstName = updatedUser.FirstName ?? user.FirstName;
+            user.LastName = updatedUser.LastName ?? user.LastName;
+            user.MiddleName = updatedUser.MiddleName ?? user.MiddleName;
+            user.Email = updatedUser.Email ?? user.Email;
+            user.PhoneNumber = updatedUser.PhoneNumber ?? user.PhoneNumber;
+            user.IsActive = updatedUser.IsActive;
+            user.GoogleSub = updatedUser.GoogleSub ?? user.GoogleSub;
+
+            // Сохраняем изменения в базе данных
+            await _dbContext.SaveChangesAsync();
+
             return Ok(user);
         }
     }
